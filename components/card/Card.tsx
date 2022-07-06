@@ -2,14 +2,14 @@ import React, { ReactNode } from 'react'
 
 export type CardProps = {
   title: string
-  children: ReactNode
+  content: string
 }
 
-export const Card = ({ title, children }: CardProps) => {
+export const Card = ({ title, content }: CardProps) => {
   return (
-    <div className='flex flex-col w-full rounded-xl p-4 pt-3 bg-white drop-shadow mb-3'>
+    <div className='flex flex-col w-full rounded-xl p-4 pt-3 bg-white drop-shadow'>
       <h4 className='mb-2 font-semibold'>{title}</h4>
-      <p className='text-sm text-gray-500 leading-5'>{children}</p>
+      <p className='text-sm text-gray-500 leading-5'>{content}</p>
     </div>
   )
 }
