@@ -1,3 +1,5 @@
+The ui of the io-kanban board is based on [this dribble design]("https://dribbble.com/shots/15261921-Dashboard-for-workflow"), made by _Irakli Lolashvili_.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
