@@ -1,4 +1,4 @@
-export const initialData = {
+export const mockData = {
   tasks: {
     1: { id: 1, title: 'Design', content: 'Make a awesome design' },
     2: { id: 2, title: 'Develop', content: 'Develop an awesome app' },

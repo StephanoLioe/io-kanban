@@ -1,4 +1,4 @@
-type SourceCol = {
+type Column = {
   id: string
   title: string
   taskIds: number[]
@@ -15,7 +15,7 @@ type KanbanState = {
     [key: number]: Task
   }
   columns: {
-    [key: string]: SourceCol
+    [key: string]: Column
   }
   columnOrder: string[]
 }

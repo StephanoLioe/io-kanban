@@ -3,7 +3,7 @@ import { AddCardBtn } from '../add-card-btn'
 import { Card } from '../card'
 
 type ColumnsProps = {
-  column: SourceCol
+  column: Column
   tasks: Task[]
 }
 
