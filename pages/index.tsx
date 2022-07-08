@@ -1,22 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Session } from '@supabase/supabase-js'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Auth } from '../components/auth'
 import { KanbanBoard } from '../components/kanban-board'
 import { mockData } from '../data/mockData'
+import { useGetAuthenticationSession } from '../hooks/useGetAuthenicationSession'
 import { supabase } from '../utils/supabaseClient'
 
 const Home: NextPage = () => {
-  const [session, setSession] = useState<Session | null>(null)
-
-  useEffect(() => {
-    setSession(supabase.auth.session())
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-  }, [])
+  const session = useGetAuthenticationSession()
 
   if (!session) {
     return <Auth />
