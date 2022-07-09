@@ -2,7 +2,6 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Auth } from '../components/auth'
 import { KanbanBoard } from '../components/kanban-board'
-import { mockData } from '../data/mockData'
 import { useGetAuthenticationSession } from '../hooks/useGetAuthenicationSession'
 import { supabase } from '../utils/supabaseClient'
 
@@ -36,7 +35,7 @@ const Home: NextPage = () => {
             Sign out
           </button>
         </div>
-        <KanbanBoard kanbanState={mockData} />
+        <KanbanBoard />
       </div>
     </>
   )
