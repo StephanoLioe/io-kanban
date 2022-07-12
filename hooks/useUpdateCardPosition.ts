@@ -1,26 +1,24 @@
 import { useQueryClient, useMutation } from 'react-query'
 import { supabase } from '../utils/supabaseClient'
 
-type PositionUpdate = {
-  id: string
-  title: string
-  taskIds: string[]
-}[]
-
 type UpdatePos = {
-  positionToUpdate: PositionUpdate
+  positionToUpdate: string[]
   newState: KanbanState
 }
 
 export const updateCardPosition = async (updatePos: UpdatePos) => {
+  const tasks = updatePos.newState.columns['1'].tasks
+  console.log('updateCard', tasks)
+
   const user = supabase.auth.user()
-
-  updatePos.positionToUpdate.forEach(async (positions) => {
-    const { id, taskIds } = positions
-
+  updatePos.positionToUpdate.forEach(async (id) => {
     await supabase
-      .from('columns')
-      .update({ task_ids: taskIds })
+      .from('tasks')
+      .update({
+        id: id,
+        prev: tasks[id].prev,
+        next: tasks[id].next,
+      })
       .eq('id', id)
       .eq('user_id', user?.id)
   })
@@ -28,6 +26,7 @@ export const updateCardPosition = async (updatePos: UpdatePos) => {
 
 export const useUpdateCardPosition = () => {
   const queryClient = useQueryClient()
+
   return useMutation(updateCardPosition, {
     // When mutate is called:
     onMutate: async (updatePos) => {
@@ -53,8 +52,8 @@ export const useUpdateCardPosition = () => {
       queryClient.setQueryData(['kanbanState'], context?.previousState)
     },
     // Always refetch after error or success:
-    onSettled: () => {
-      queryClient.invalidateQueries(['kanbanState'])
-    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries(['kanbanState'])
+    // },
   })
 }

@@ -26,7 +26,8 @@ const Home: NextPage = () => {
         <meta name='description' content='Just another awesome kanban board' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <div className='h-screen'>
+      {/* <div className='h-screen'> */}
+      <div className=''>
         <div>
           <button
             className='h-9 rounded-xl bg-red-300 drop-shadow-sm duration-300 hover:bg-red-200 px-4'

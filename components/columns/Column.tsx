@@ -8,6 +8,7 @@ type ColumnsProps = {
 }
 
 const Column = ({ column, tasks }: ColumnsProps) => {
+  // console.log('Column tasks', tasks)
   return (
     <div className='flex flex-col h-full gap-4 w-80 bg-green-50 font-medium rounded-2xl p-3 pt-4'>
       <h3>{column.title}</h3>

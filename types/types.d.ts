@@ -1,27 +1,35 @@
 type Column = {
   id: string
   title: string
-  taskIds: string[]
+  tasks: Tasks
+  tasksOrder: Task[]
+}
+
+type Tasks = {
+  [key: string]: Task
+}
+
+type Columns = {
+  [key: string]: Column
 }
 
 type ColumnData = {
   id: string
   title: string
-  task_ids: string[]
+  tasks: Task[]
+  taskCount: number
 }
 
 type Task = {
   id: string
   title: string
-  content: string
+  content?: string
+  prev: string | null
+  next: string | null
 }
 
 type KanbanState = {
-  tasks: {
-    [key: string]: Task
-  }
-  columns: {
-    [key: string]: Column
-  }
+  tasks: Tasks
+  columns: Columns
   columnOrder: string[]
 }
