@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
-import { supabase } from '../utils/supabaseClient'
+import { supabase } from '../supabaseClient'
 
 export const useGetAuthenticationSession = () => {
   const [session, setSession] = useState<Session | null>(null)

@@ -22,10 +22,8 @@ export const Columns = ({ state }: { state: KanbanState }) => {
   const winReady = useWinReady()
 
   const columns = state.columnOrder.map((columnId) => {
-    // console.log('column', state)
     const column = state.columns[columnId]
-    const tasks = column.tasksOrder.map(({ id }) => column.tasks[id])
-    // console.log('tasks in Colums', tasks)
+    const tasks = column.tasksOrder.map((id) => column.tasks[id])
 
     return <Column key={column.id} column={column} tasks={tasks} />
   })

@@ -1,8 +1,7 @@
-type Column = {
-  id: string
-  title: string
+type KanbanState = {
   tasks: Tasks
-  tasksOrder: Task[]
+  columns: Columns
+  columnOrder: string[]
 }
 
 type Tasks = {
@@ -13,23 +12,25 @@ type Columns = {
   [key: string]: Column
 }
 
-type ColumnData = {
+type Column = {
   id: string
   title: string
-  tasks: Task[]
-  taskCount: number
+  tasks: Tasks
+  tasksOrder: string[]
 }
 
 type Task = {
   id: string
   title: string
-  content?: string
-  prev: string | null
+  content: string
+  head: boolean
   next: string | null
 }
 
-type KanbanState = {
-  tasks: Tasks
-  columns: Columns
-  columnOrder: string[]
+// Response data from db
+type ColumnData = {
+  id: string
+  title: string
+  tasks: Task[]
+  taskCount: number
 }

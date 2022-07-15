@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Auth } from '../components/auth'
 import { KanbanBoard } from '../components/kanban-board'
-import { useGetAuthenticationSession } from '../hooks/useGetAuthenicationSession'
+import { useGetAuthenticationSession } from '../utils/hooks/useGetAuthenicationSession'
 import { supabase } from '../utils/supabaseClient'
 
 const Home: NextPage = () => {
