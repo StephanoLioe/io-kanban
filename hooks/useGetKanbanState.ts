@@ -9,52 +9,34 @@ export const fetchKanbanState = async () => {
   }
 
   const {
-    data: datatasks,
-    error: tasksErr,
-    status: tasksStatus,
-  } = await supabase
-    .from('tasks')
-    .select(`id, title, content`)
-    .eq('user_id', user.id)
-
-  if (tasksErr && tasksStatus !== 406) {
-    throw tasksErr
-  }
-
-  const {
     data: datacolumns,
     error: columnErr,
     status: columnStatus,
   } = await supabase
     .from('columns')
-    .select(`id, title, task_ids`)
+    .select(
+      `
+      id,
+      title, 
+      position,  
+      tasks(
+        id,
+        title,
+        content,
+        position,
+        column_id
+    )`
+    )
     .eq('user_id', user.id)
+    .order('position')
+    .order('position', { foreignTable: 'tasks' })
 
   if (columnErr && columnStatus !== 406) {
     throw columnErr
   }
 
-  const tasks: Task[] = datatasks || []
-  const columns: ColumnData[] = datacolumns || []
-
-  const normalizedTasks: {
-    [key: string]: Task
-  } = tasks.reduce((obj, task: Task) => ({ ...obj, [task.id]: task }), {})
-
-  const normalizedColumns: {
-    [key: string]: Column
-  } = columns.reduce(
-    (obj, column: ColumnData) => ({
-      ...obj,
-      [column.id]: { ...column, taskIds: column.task_ids || [] },
-    }),
-    {}
-  )
-
   return {
-    columns: normalizedColumns,
-    tasks: normalizedTasks,
-    columnOrder: ['1', '2', '3'],
+    columns: datacolumns,
   } as KanbanState
 }
 

@@ -1,21 +1,18 @@
-import { useState } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
-import NoWorkResult from 'postcss/lib/no-work-result'
-import { mockData } from '../../data/mockData'
 import { useGetKanbanState } from '../../hooks/useGetKanbanState'
 import { useUpdateCardPosition } from '../../hooks/useUpdateCardPosition'
 import { Columns } from '../columns'
 
 export const KanbanBoard = () => {
-  const [data, setData] = useState<KanbanState>(mockData)
-  // const { data, isSuccess } = useGetKanbanState()
+  const { data, isSuccess } = useGetKanbanState()
+
   const { mutate: updatePosition } = useUpdateCardPosition()
 
-  if (!data.columns) return null
+  if (!data?.columns) return null
 
-  // if (!isSuccess) {
-  //   return null
-  // }
+  if (!isSuccess) {
+    return null
+  }
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result
@@ -31,32 +28,29 @@ export const KanbanBoard = () => {
       return
     }
 
-    console.log('Data:', data)
-    console.log('source/destination:', source, destination)
-
     // If the user drops within the same column but in a different position
-    const sourceCol = data.columns.find((col) => col.id === source.droppableId)
-    const destinationCol = data.columns.find(
-      (col) => col.id === destination.droppableId
+    const sourceCol = data.columns.find(
+      (col) => String(col.id) === source.droppableId
     )
-
-    const sourceColIndex = data.columns.findIndex(
-      (col) => col.id === source.droppableId
+    const destinationCol = data.columns.find(
+      (col) => String(col.id) === destination.droppableId
     )
 
     if (!sourceCol || !destinationCol) {
       return
     }
-    console.log('Col:', sourceCol, destinationCol)
 
-    const destinationColIndex = data.columns.findIndex(
-      (col) => col.id === destination.droppableId
+    const sourceColIndex = data.columns.findIndex(
+      (col) => String(col.id) === source.droppableId
     )
 
-    if (sourceColIndex == -1 || destinationColIndex === -1) {
+    const destinationColIndex = data.columns.findIndex(
+      (col) => String(col.id) === destination.droppableId
+    )
+
+    if (sourceColIndex === -1 || destinationColIndex === -1) {
       return
     }
-    console.log('ColInded:', sourceColIndex, destinationColIndex)
 
     if (sourceCol.id === destinationCol.id) {
       const newColumn = reorderColumnList(
@@ -69,12 +63,14 @@ export const KanbanBoard = () => {
 
       newState.columns[sourceColIndex] = newColumn
 
-      setData(newState)
+      const positionsToUpdateSource = newState.columns[
+        sourceColIndex
+      ].tasks.slice(source.index)
 
-      // updatePosition({
-      //   newState,
-      //   positionToUpdate: [newColumn],
-      // })
+      updatePosition({
+        newState,
+        positionsToUpdate: positionsToUpdateSource,
+      })
       return
     }
 
@@ -83,26 +79,47 @@ export const KanbanBoard = () => {
     const [removedTask] = startTasks.splice(source.index, 1)
     const newStartCol = {
       ...sourceCol,
-      tasksId: startTasks,
+      tasksId: startTasks
+        .map((task, i) => ({
+          ...task,
+          column_id: sourceCol.id,
+          position: i,
+        }))
+        .sort((a, b) => a.position - b.position),
     }
 
     const endTasks = destinationCol.tasks
     endTasks.splice(destination.index, 0, removedTask)
     const newEndCol = {
       ...destinationCol,
-      tasks: endTasks,
+      tasks: endTasks
+        .map((task, i) => ({
+          ...task,
+          column_id: destinationCol.id,
+          position: i,
+        }))
+        .sort((a, b) => a.position - b.position),
     }
 
     const newState = { ...data }
     newState.columns[sourceColIndex] = newStartCol
     newState.columns[destinationColIndex] = newEndCol
 
-    setData(newState)
+    const positionsToUpdateSource = newState.columns[
+      sourceColIndex
+    ].tasks.slice(source.index)
 
-    // updatePosition({
-    //   newState,
-    //   positionToUpdate: [newStartCol, newEndCol],
-    // })
+    const positionsToUpdateDestination = newState.columns[
+      destinationColIndex
+    ].tasks.slice(destination.index)
+
+    updatePosition({
+      newState,
+      positionsToUpdate: [
+        ...positionsToUpdateSource,
+        ...positionsToUpdateDestination,
+      ],
+    })
   }
 
   return (
@@ -126,7 +143,9 @@ const reorderColumnList = (
 
   const newColumn = {
     ...sourceCol,
-    tasks: newTasks,
+    tasks: newTasks
+      .map((task, i) => ({ ...task, position: i }))
+      .sort((a, b) => a.position - b.position),
   }
 
   return newColumn

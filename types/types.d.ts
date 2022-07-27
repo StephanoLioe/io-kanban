@@ -1,22 +1,16 @@
 type Column = {
-  id: string
+  id: number
   title: string
   tasks: Task[]
   position: number
 }
 
-// type ColumnData = {
-//   id: string
-//   title: string
-//   task_ids: string[]
-// }
-
 type Task = {
-  id: string
+  id: number
   title: string
   content: string
   position: number
-  column_id?: string
+  column_id: number
 }
 
 type KanbanState = {

@@ -1,29 +1,28 @@
 import { useQueryClient, useMutation } from 'react-query'
 import { supabase } from '../utils/supabaseClient'
 
-type PositionUpdate = {
-  id: string
-  title: string
-  taskIds: string[]
-}[]
-
 type UpdatePos = {
-  positionToUpdate: PositionUpdate
+  positionsToUpdate: Task[]
   newState: KanbanState
 }
 
 export const updateCardPosition = async (updatePos: UpdatePos) => {
   const user = supabase.auth.user()
+  if (!user) {
+    console.error('Not authenticated')
+    return
+  }
+  const positionsToUpdate = updatePos.positionsToUpdate.map((task) => ({
+    ...task,
+    user_id: user.id,
+  }))
 
-  // updatePos.positionToUpdate.forEach(async (positions) => {
-  //   const { id, taskIds } = positions
+  const { data } = await supabase
+    .from('tasks')
+    .upsert(positionsToUpdate)
+    .eq('user_id', user.id)
 
-  //   await supabase
-  //     .from('columns')
-  //     .update({ task_ids: taskIds })
-  //     .eq('id', id)
-  //     .eq('user_id', user?.id)
-  // })
+  return data
 }
 
 export const useUpdateCardPosition = () => {
