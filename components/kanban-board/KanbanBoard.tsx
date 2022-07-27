@@ -1,17 +1,21 @@
+import { useState } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
+import NoWorkResult from 'postcss/lib/no-work-result'
+import { mockData } from '../../data/mockData'
 import { useGetKanbanState } from '../../hooks/useGetKanbanState'
 import { useUpdateCardPosition } from '../../hooks/useUpdateCardPosition'
 import { Columns } from '../columns'
 
 export const KanbanBoard = () => {
-  const { data, isSuccess } = useGetKanbanState()
+  const [data, setData] = useState<KanbanState>(mockData)
+  // const { data, isSuccess } = useGetKanbanState()
   const { mutate: updatePosition } = useUpdateCardPosition()
 
-  if (!data || (!data.columns && !data.columns)) return null
+  if (!data.columns) return null
 
-  if (!isSuccess) {
-    return null
-  }
+  // if (!isSuccess) {
+  //   return null
+  // }
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result
@@ -27,9 +31,32 @@ export const KanbanBoard = () => {
       return
     }
 
+    console.log('Data:', data)
+    console.log('source/destination:', source, destination)
+
     // If the user drops within the same column but in a different position
-    const sourceCol = data.columns[source.droppableId]
-    const destinationCol = data.columns[destination.droppableId]
+    const sourceCol = data.columns.find((col) => col.id === source.droppableId)
+    const destinationCol = data.columns.find(
+      (col) => col.id === destination.droppableId
+    )
+
+    const sourceColIndex = data.columns.findIndex(
+      (col) => col.id === source.droppableId
+    )
+
+    if (!sourceCol || !destinationCol) {
+      return
+    }
+    console.log('Col:', sourceCol, destinationCol)
+
+    const destinationColIndex = data.columns.findIndex(
+      (col) => col.id === destination.droppableId
+    )
+
+    if (sourceColIndex == -1 || destinationColIndex === -1) {
+      return
+    }
+    console.log('ColInded:', sourceColIndex, destinationColIndex)
 
     if (sourceCol.id === destinationCol.id) {
       const newColumn = reorderColumnList(
@@ -38,55 +65,50 @@ export const KanbanBoard = () => {
         destination.index
       )
 
-      const newState = {
-        ...data,
-        columns: {
-          ...data.columns,
-          [newColumn.id]: newColumn,
-        },
-      }
+      const newState = { ...data }
 
-      updatePosition({
-        newState,
-        positionToUpdate: [newColumn],
-      })
+      newState.columns[sourceColIndex] = newColumn
+
+      setData(newState)
+
+      // updatePosition({
+      //   newState,
+      //   positionToUpdate: [newColumn],
+      // })
       return
     }
 
     // If the user moves from one column to another
-    const startTaskIds = sourceCol.taskIds
-    const [removed] = startTaskIds.splice(source.index, 1)
+    const startTasks = sourceCol.tasks
+    const [removedTask] = startTasks.splice(source.index, 1)
     const newStartCol = {
       ...sourceCol,
-      taskIds: startTaskIds,
+      tasksId: startTasks,
     }
 
-    const endTaskIds = destinationCol.taskIds
-    endTaskIds.splice(destination.index, 0, removed)
+    const endTasks = destinationCol.tasks
+    endTasks.splice(destination.index, 0, removedTask)
     const newEndCol = {
       ...destinationCol,
-      taskIds: endTaskIds,
+      tasks: endTasks,
     }
 
-    const newState = {
-      ...data,
-      columns: {
-        ...data.columns,
-        [newStartCol.id]: newStartCol,
-        [newEndCol.id]: newEndCol,
-      },
-    }
+    const newState = { ...data }
+    newState.columns[sourceColIndex] = newStartCol
+    newState.columns[destinationColIndex] = newEndCol
 
-    updatePosition({
-      newState,
-      positionToUpdate: [newStartCol, newEndCol],
-    })
+    setData(newState)
+
+    // updatePosition({
+    //   newState,
+    //   positionToUpdate: [newStartCol, newEndCol],
+    // })
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <main className='flex flex-column h-full bg-white p-5'>
-        <Columns state={data} />
+        <Columns data={data} />
       </main>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </DragDropContext>
@@ -98,13 +120,13 @@ const reorderColumnList = (
   startIndex: number,
   endIndex: number
 ) => {
-  const newTaskIds = sourceCol.taskIds
-  const [removed] = newTaskIds.splice(startIndex, 1)
-  newTaskIds.splice(endIndex, 0, removed)
+  const newTasks = [...sourceCol.tasks]
+  const [removedTask] = newTasks.splice(startIndex, 1)
+  newTasks.splice(endIndex, 0, removedTask)
 
   const newColumn = {
     ...sourceCol,
-    taskIds: newTaskIds,
+    tasks: newTasks,
   }
 
   return newColumn

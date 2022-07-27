@@ -18,15 +18,18 @@ const useWinReady = () => {
   return winReady
 }
 
-export const Columns = ({ state }: { state: KanbanState }) => {
+export const Columns = ({ data }: { data: KanbanState }) => {
   const winReady = useWinReady()
 
-  const columns = state.columnOrder.map((columnId) => {
-    const column = state.columns[columnId]
-    const tasks = column.taskIds.map((taskId) => state.tasks[taskId])
+  if (!winReady) {
+    return null
+  }
 
-    return <Column key={column.id} column={column} tasks={tasks} />
-  })
-
-  return winReady ? <ColumnsWrapper>{columns}</ColumnsWrapper> : null
+  return (
+    <ColumnsWrapper>
+      {data.columns.map((column) => (
+        <Column key={column.id} column={column} />
+      ))}
+    </ColumnsWrapper>
+  )
 }

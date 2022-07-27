@@ -15,15 +15,15 @@ type UpdatePos = {
 export const updateCardPosition = async (updatePos: UpdatePos) => {
   const user = supabase.auth.user()
 
-  updatePos.positionToUpdate.forEach(async (positions) => {
-    const { id, taskIds } = positions
+  // updatePos.positionToUpdate.forEach(async (positions) => {
+  //   const { id, taskIds } = positions
 
-    await supabase
-      .from('columns')
-      .update({ task_ids: taskIds })
-      .eq('id', id)
-      .eq('user_id', user?.id)
-  })
+  //   await supabase
+  //     .from('columns')
+  //     .update({ task_ids: taskIds })
+  //     .eq('id', id)
+  //     .eq('user_id', user?.id)
+  // })
 }
 
 export const useUpdateCardPosition = () => {
