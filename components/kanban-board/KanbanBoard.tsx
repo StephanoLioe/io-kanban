@@ -85,7 +85,7 @@ export const KanbanBoard = () => {
           column_id: sourceCol.id,
           position: i,
         }))
-        .sort((a, b) => a.position - b.position),
+        .sort(sortPosition),
     }
 
     const endTasks = destinationCol.tasks
@@ -98,7 +98,7 @@ export const KanbanBoard = () => {
           column_id: destinationCol.id,
           position: i,
         }))
-        .sort((a, b) => a.position - b.position),
+        .sort(sortPosition),
     }
 
     const newState = { ...data }
@@ -127,7 +127,6 @@ export const KanbanBoard = () => {
       <main className='flex flex-column h-full bg-white p-5'>
         <Columns data={data} />
       </main>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
     </DragDropContext>
   )
 }
@@ -145,8 +144,10 @@ const reorderColumnList = (
     ...sourceCol,
     tasks: newTasks
       .map((task, i) => ({ ...task, position: i }))
-      .sort((a, b) => a.position - b.position),
+      .sort(sortPosition),
   }
 
   return newColumn
 }
+
+const sortPosition = (a: Task, b: Task) => a.position - b.position
