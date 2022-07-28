@@ -28,7 +28,6 @@ export const KanbanBoard = () => {
       return
     }
 
-    // If the user drops within the same column but in a different position
     const sourceCol = data.columns.find(
       (col) => String(col.id) === source.droppableId
     )
@@ -52,6 +51,7 @@ export const KanbanBoard = () => {
       return
     }
 
+    // If the user drops within the same column but in a different position
     if (sourceCol.id === destinationCol.id) {
       const newColumn = reorderColumnList(
         sourceCol,
@@ -65,7 +65,7 @@ export const KanbanBoard = () => {
 
       const positionsToUpdateSource = newState.columns[
         sourceColIndex
-      ].tasks.slice(source.index)
+      ].tasks.slice(Math.min(source.index, destination.index))
 
       updatePosition({
         newState,
